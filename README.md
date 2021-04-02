@@ -4,10 +4,10 @@
    and makes the copy mode the default.
 
    Key changes:
-   - Remove Host configurations
+   - Add Host cfg to configure inputs for the target (e.g. riscv, arm)
    - A target SPEC2017 build is done to generate target binaries
    - A target bin/inputs are located in build/overlay/
-   - A run script(run.sh) is generated that executes all the inputs for the benchmark
+   - Provide arm.cfg to compile aarch64 benchamrks
    - create run-gem5.sh to use gem5 target in se mode (se.py)
    
    

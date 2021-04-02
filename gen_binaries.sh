@@ -11,8 +11,14 @@ if [ -z  "$SPEC_DIR" ]; then
 fi
 
 # NB: Use the same name in the config "label" as the config filename. See line 33 *.cfg
-CONFIG=x86
+CONFIG=arm
 CONFIGFILE=${CONFIG}.cfg
+LABEL=arm
+if [[ $LABEL == "arm" ]]; then
+   label_suffix="64"
+else
+   label_suffix="${label_suffix}"
+fi
 
 # The config used to compile for the host machine
 H_CONFIG=host
@@ -105,32 +111,30 @@ if [ "$compileFlag" = true ]; then
 
    # copy over the config file we will use to compile the benchmarks
    cp $build_dir/../${CONFIGFILE} $SPEC_DIR/config
-   # cp $build_dir/../${H_CONFIGFILE} $SPEC_DIR/config
+   cp $build_dir/../${H_CONFIGFILE} $SPEC_DIR/config
+
    echo "Compiling target SPEC with config: ${CONFIGFILE}"
    cd $SPEC_DIR; . ./shrc; 
-   time runcpu --config=${CONFIGFILE} --size=${input_type} --action setup ${suite_type}
+   time runcpu --config=${CONFIGFILE} --size=${input_type} --action build ${suite_type}
    # > ${build_dir}/${CONFIG}-${suite_type}-build.log
-   # echo "Compiling host SPEC and gunerating inputs with config: ${H_CONFIGFILE}"
-   # cd $SPEC_DIR; . ./shrc; time runcpu --verbose 10 --config ${H_CONFIG} --size ${input_type} \
-      # --action runsetup ${suite_type} > ${build_dir}/${H_CONFIG}-${suite_type}-build.log
+   echo "Compiling host SPEC and generating inputs with config: ${H_CONFIGFILE}"
+   cd $SPEC_DIR; . ./shrc; 
+   time runcpu --config ${H_CONFIGFILE} --size ${input_type} --action runsetup ${suite_type}
+   # > ${build_dir}/${H_CONFIG}-${suite_type}-build.log
 
    for b in ${benchmarks[@]}; do
-      output_dir=${overlay_dir}/${suite_type}/$b/${input_type}
+      output_dir=${overlay_dir}/${suite_type}/$b/${LABEL}/${input_type}
       mkdir -p $output_dir
       bmark_base_dir=$SPEC_DIR/benchspec/CPU/$b
       unprefixed=${b:4}
       b_short_name=${unprefixed/%_[sr]/}
 
-      # if [[ "${input_type}" == "ref" ]]; then
-         # host_bmk_dir=${bmark_base_dir}/run/run_base_ref${class}_${H_CONFIG}-m64.0000;
-      # else
-         # host_bmk_dir=${bmark_base_dir}/run/run_base_${input}_${H_CONFIG}-m64.0000;
-      # fi
-
       if [[ "${input_type}" == "ref" ]]; then
-         host_bmk_dir=${bmark_base_dir}/run/run_base_ref${class}_mytest-m64.0000;
+         host_bmk_dir=${bmark_base_dir}/run/run_base_ref${class}_${H_CONFIG}-m64.0000;
+         target_bmk_dir=${bmark_base_dir}/exe;
       else
-         host_bmk_dir=${bmark_base_dir}/run/run_base_${input_type}_mytest-m64.0000;
+         host_bmk_dir=${bmark_base_dir}/run/run_base_${input_type}_${H_CONFIG}-m64.0000;
+         target_bmk_dir=${bmark_base_dir}/exe;
       fi
 
       # Copy the inputs from the host build
@@ -140,14 +144,13 @@ if [ "$compileFlag" = true ]; then
          echo $input
          cp -rf $input -T $output_dir/$(basename "$input")
       done
-      target_bin=
+
       if [[ $b == "523.xalancbmk_r" ]]; then
-         target_bin=`find $host_bmk_dir -name "cpuxalan*mytest-m64"`
+         target_bin=`find $target_bmk_dir -name "cpuxalan*${LABEL}-${label_suffix}"`
       elif [[ $b == "602.gcc_s" ]]; then
-         target_bin=`find $host_bmk_dir -name "sgcc*mytest-m64"`
+         target_bin=`find $target_bmk_dir -name "sgcc*${LABEL}-${label_suffix}"`
       else
-         # target_bin=`find $host_bmk_dir -name "*${b_short_name}*${CONFIG}-64"`
-         target_bin=${host_bmk_dir}/${b_short_name}${suffix}_base.mytest-m64
+         target_bin=${target_bmk_dir}/${b_short_name}${suffix}_base.${LABEL}-${label_suffix}
       fi
       cp -f ${target_bin} $output_dir/
 
