@@ -1,14 +1,16 @@
-** SPEC2017 GEM5 Port **
+** SPEC2017 Port **
 
    This branch is a WIP and changes Speckle's usage model. It removes run support,
    and makes the copy mode the default.
 
    Key changes:
-   - Remove Host configurations
+   - Host and Target configurations are provided.
    - A target SPEC2017 build is done to generate target binaries
-   - A target bin/inputs are located in build/overlay/
+   - A host SPEC2017 runsetup is done to complete generate a working directories
+     for each benchmark.
+   - The host directory is copyied to the overlay directory, host binaries are replaced
+     with target binaries
    - A run script(run.sh) is generated that executes all the inputs for the benchmark
-   - create run-gem5.sh to use gem5 target in se mode (se.py)
    
    
    All of the following sections of the README may be out of date.
