@@ -115,7 +115,7 @@ if [ "$compileFlag" = true ]; then
       # --action runsetup ${suite_type} > ${build_dir}/${H_CONFIG}-${suite_type}-build.log
 
    for b in ${benchmarks[@]}; do
-      output_dir=${overlay_dir}/${suite_type}/$b
+      output_dir=${overlay_dir}/${suite_type}/$b/${input_type}
       mkdir -p $output_dir
       bmark_base_dir=$SPEC_DIR/benchspec/CPU/$b
       unprefixed=${b:4}
@@ -130,7 +130,7 @@ if [ "$compileFlag" = true ]; then
       if [[ "${input_type}" == "ref" ]]; then
          host_bmk_dir=${bmark_base_dir}/run/run_base_ref${class}_mytest-m64.0000;
       else
-         host_bmk_dir=${bmark_base_dir}/run/run_base_${input}_mytest-m64.0000;
+         host_bmk_dir=${bmark_base_dir}/run/run_base_${input_type}_mytest-m64.0000;
       fi
 
       # Copy the inputs from the host build

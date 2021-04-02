@@ -41,8 +41,8 @@ for b in ${BENCHMARKS[@]}; do
    echo " -== Dumping ${b} stats in ${base_dir}/output/${b}  ==-"
     
    # go to the directory where the exectuabl&inputs reside
-   echo "cd ${overlay_dir}/$suite_type/${b}${suffix}"
-   cd ${overlay_dir}/$suite_type/${b}${suffix}
+   echo "cd ${overlay_dir}/$suite_type/${b}${suffix}/${INPUT_TYPE}"
+   cd ${overlay_dir}/$suite_type/${b}${suffix}/${INPUT_TYE}
    SHORT_EXE=${b##*.}$suffix # cut off the numbers ###.short_exe
    if [ $b == "602.gcc" ]; then 
       SHORT_EXE=sgcc #WTF SPEC???
