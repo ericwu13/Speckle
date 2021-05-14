@@ -11,13 +11,14 @@ if [ -z  "$SPEC_DIR" ]; then
 fi
 
 # NB: Use the same name in the config "label" as the config filename. See line 33 *.cfg
+# EDIT: change to your target (x86 or arm)
 CONFIG=arm
 CONFIGFILE=${CONFIG}.cfg
 LABEL=arm
 if [[ $LABEL == "arm" ]]; then
    label_suffix="64"
 else
-   label_suffix="${label_suffix}"
+   label_suffix="m64"
 fi
 
 # The config used to compile for the host machine
@@ -35,9 +36,10 @@ genCommands=false
 # intrate, fprate, intspeed, fpspeed
 # Supersets spec{speed,rate}, and all, are not supported
 suite_type=intspeed
+# suite_type=fpspeed
 
 # ref, train, test
-input_type=test
+input_type=ref
 
 function usage
 {
@@ -147,11 +149,14 @@ if [ "$compileFlag" = true ]; then
 
       if [[ $b == "523.xalancbmk_r" ]]; then
          target_bin=`find $target_bmk_dir -name "cpuxalan*${LABEL}-${label_suffix}"`
-      elif [[ $b == "602.gcc_s" ]]; then
-         target_bin=`find $target_bmk_dir -name "sgcc*${LABEL}-${label_suffix}"`
+      elif [[ $b == *"gcc"* ]]; then
+         target_bin=`find $target_bmk_dir -name "*gcc*${LABEL}-${label_suffix}"`
       else
-         target_bin=${target_bmk_dir}/${b_short_name}${suffix}_base.${LABEL}-${label_suffix}
+         # target_bin=${target_bmk_dir}/${b_short_name}${suffix}_base.${LABEL}-${label_suffix}
+         target_bin=`find $target_bmk_dir -name "*${LABEL}-${label_suffix}"`
       fi
+      echo $target_bin
+
       cp -f ${target_bin} $output_dir/
 
       # Generate a run script
